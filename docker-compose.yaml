@@ -1,0 +1,44 @@
+version: '3.9'
+
+services:
+  backend:
+    container_name: nest-youapp
+    build:
+      context: .
+      dockerfile: Dockerfile  
+    ports:
+      - '2000:2000'
+    depends_on:
+      - mongo
+      - rabbitmq
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    command: npm run start:dev 
+
+  mongo:
+    image: mongo:latest
+    container_name: mongodb
+    restart: always
+    ports:
+      - '27018:27017'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpass
+    volumes:
+      - mongo-data:/data/db
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - '5672:5672'       # RabbitMQ messaging port
+      - '15672:15672'     # RabbitMQ Web UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+volumes:
+  mongo-data:

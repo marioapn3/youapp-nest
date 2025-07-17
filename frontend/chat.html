@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nest YouApp - Chat</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: white;
+            border-bottom: 1px solid #e1e5e9;
+            padding: 15px 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #667eea;
+            padding: 5px;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+        }
+
+        .back-btn:hover {
+            background: #f0f2ff;
+        }
+
+        .chat-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .chat-details h3 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 2px;
+        }
+
+        .chat-details p {
+            color: #666;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #28a745;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .connection-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #dc3545;
+        }
+
+        .connection-dot.connected {
+            background: #28a745;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            margin: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .messages-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .message.sent {
+            justify-content: flex-end;
+        }
+
+        .message.received {
+            justify-content: flex-start;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            position: relative;
+            word-wrap: break-word;
+        }
+
+        .message.sent .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.received .message-content {
+            background: white;
+            color: #333;
+            border: 1px solid #e1e5e9;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-time {
+            font-size: 11px;
+            margin-top: 4px;
+            opacity: 0.7;
+        }
+
+        .message.sent .message-time {
+            text-align: right;
+        }
+
+        .message.received .message-time {
+            text-align: left;
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 12px 16px;
+            background: white;
+            border: 1px solid #e1e5e9;
+            border-radius: 18px;
+            border-bottom-left-radius: 4px;
+            color: #666;
+            font-style: italic;
+            margin-bottom: 15px;
+            align-self: flex-start;
+        }
+
+        .input-container {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e1e5e9;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 25px;
+            font-size: 16px;
+            resize: none;
+            max-height: 120px;
+            min-height: 50px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .message-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: transform 0.2s;
+            flex-shrink: 0;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .welcome-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .welcome-message h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 20px;
+            text-align: center;
+        }
+
+        .system-message {
+            text-align: center;
+            margin: 15px 0;
+            color: #666;
+            font-size: 12px;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin: 10px;
+                border-radius: 8px;
+            }
+            
+            .header {
+                padding: 10px 15px;
+            }
+            
+            .message-content {
+                max-width: 85%;
+            }
+        }
+
+        /* Scrollbar styling */
+        .messages-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .messages-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .messages-container::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+
+        .messages-container::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="chat-info">
+            <button class="back-btn" onclick="goBack()">←</button>
+            <div class="chat-avatar" id="chatAvatar">U</div>
+            <div class="chat-details">
+                <h3 id="chatTitle">Chat</h3>
+                <p>
+                    <span class="status-indicator"></span>
+                    <span id="chatStatus">Online</span>
+                </p>
+            </div>
+        </div>
+        <div class="connection-status">
+            <span class="connection-dot" id="connectionDot"></span>
+            <span id="connectionText">Connecting...</span>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="messages-container" id="messagesContainer">
+            <div class="loading">Loading messages...</div>
+        </div>
+        
+        <div class="typing-indicator" id="typingIndicator">
+            Someone is typing...
+        </div>
+
+        <div class="input-container">
+            <div class="input-wrapper">
+                <textarea 
+                    class="message-input" 
+                    id="messageInput" 
+                    placeholder="Type a message..."
+                    rows="1"
+                    onkeydown="handleKeyDown(event)"
+                    oninput="autoResize(this)"
+                ></textarea>
+                <button class="send-btn" id="sendBtn" onclick="sendMessage()" disabled>
+                    ➤
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.7.0/socket.io.min.js"></script>
+    <script>
+        const API_BASE_URL = 'http://localhost:2000';
+        let socket = null;
+        let currentUser = null;
+        let currentRoom = null;
+        let messages = [];
+        let isConnected = false;
+
+        // DOM elements
+        const messagesContainer = document.getElementById('messagesContainer');
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const chatAvatar = document.getElementById('chatAvatar');
+        const chatTitle = document.getElementById('chatTitle');
+        const chatStatus = document.getElementById('chatStatus');
+        const connectionDot = document.getElementById('connectionDot');
+        const connectionText = document.getElementById('connectionText');
+        const typingIndicator = document.getElementById('typingIndicator');
+
+        // Check authentication and load chat on page load
+        window.addEventListener('load', () => {
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const userData = localStorage.getItem('user');
+            if (userData) {
+                currentUser = JSON.parse(userData);
+            }
+
+            const selectedRoomId = localStorage.getItem('selectedRoomId');
+            if (!selectedRoomId) {
+                showWelcomeMessage();
+                return;
+            }
+
+            currentRoom = { id: selectedRoomId };
+            loadChat();
+        });
+
+        function showWelcomeMessage() {
+            messagesContainer.innerHTML = `
+                <div class="welcome-message">
+                    <h3>Welcome to Nest YouApp Chat</h3>
+                    <p>Select a conversation from the rooms page to start chatting</p>
+                </div>
+            `;
+        }
+
+        async function loadChat() {
+            try {
+                // Load room details and messages
+                await loadMessages();
+                connectWebSocket();
+                displayMessages();
+            } catch (error) {
+                console.error('Error loading chat:', error);
+                showError('Failed to load chat. Please try again.');
+            }
+        }
+
+        async function loadMessages() {
+            try {
+                if (!currentRoom || !currentRoom.id || currentRoom.id === 'undefined') {
+                    console.warn('Invalid room ID, using mock messages');
+                    messages = createMockMessages();
+                    return;
+                }
+
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`${API_BASE_URL}/api/viewMessages?roomId=${currentRoom.id}&page=1&limit=10`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load messages');
+                }
+
+                const data = await response.json();
+                
+                // For demo purposes, create mock messages if none exist
+                if (!data.data.messages || data.data.messages.length === 0) {
+                    messages = createMockMessages();
+                } else {
+                    messages = data.data.messages;
+                }
+
+            } catch (error) {
+                console.error('Error loading messages:', error);
+                // Use mock messages for demo
+                messages = createMockMessages();
+            }
+        }
+
+        function createMockMessages() {
+            const otherUser = 'Other User';
+            const generateMockId = () => {
+                const timestamp = Math.floor(Date.now() / 1000).toString(16);
+                const random = Math.random().toString(16).substring(2, 10);
+                const counter = Math.floor(Math.random() * 16777216).toString(16).padStart(6, '0');
+                return timestamp + random + counter;
+            };
+            
+            return [
+                {
+                    id: generateMockId(),
+                    room_id: currentRoom?.id || generateMockId(),
+                    sender_id: otherUser,
+                    message: 'Hello! How are you doing today?',
+                    is_read: true,
+                    created_at: new Date(Date.now() - 3600000).toISOString()
+                },
+                {
+                    id: generateMockId(),
+                    room_id: currentRoom?.id || generateMockId(),
+                    sender_id: currentUser?.id || 'user1',
+                    message: 'Hi! I\'m doing great, thanks for asking. How about you?',
+                    is_read: true,
+                    created_at: new Date(Date.now() - 1800000).toISOString()
+                },
+                {
+                    id: generateMockId(),
+                    room_id: currentRoom?.id || generateMockId(),
+                    sender_id: otherUser,
+                    message: 'Pretty good! I was wondering if you could help me with something.',
+                    is_read: false,
+                    created_at: new Date(Date.now() - 900000).toISOString()
+                }
+            ];
+        }
+
+        function connectWebSocket() {
+            const token = localStorage.getItem('socket_token');
+            
+            socket = io(API_BASE_URL, {
+                auth: {
+                    token: token
+                }
+            });
+
+            socket.on('connect', () => {
+                console.log('Connected to WebSocket server');
+                isConnected = true;
+                updateConnectionStatus(true);
+            });
+
+            socket.on('connectionSuccess', (data) => {
+                console.log('Connection successful:', data);
+                updateConnectionStatus(true);
+            });
+
+            socket.on('newMessage', (data) => {
+                console.log('New message received:', data);
+                // Only add message if it's not from current user (to avoid duplicates)
+                const messageSenderId = typeof data.message.sender_id === 'object' ? 
+                    data.message.sender_id._id : data.message.sender_id;
+                
+                if (messageSenderId !== currentUser?.id && messageSenderId !== currentUser?._id) {
+                    messages.push(data.message);
+                    displayMessages();
+                    scrollToBottom();
+                }
+            });
+
+            socket.on('messageSent', (data) => {
+                console.log('Message sent successfully:', data);
+            });
+
+            socket.on('disconnect', () => {
+                console.log('Disconnected from WebSocket server');
+                isConnected = false;
+                updateConnectionStatus(false);
+            });
+
+            socket.on('connect_error', (error) => {
+                console.error('Connection error:', error);
+                isConnected = false;
+                updateConnectionStatus(false);
+            });
+        }
+
+        function updateConnectionStatus(connected) {
+            if (connected) {
+                connectionDot.classList.add('connected');
+                connectionText.textContent = 'Connected';
+            } else {
+                connectionDot.classList.remove('connected');
+                connectionText.textContent = 'Disconnected';
+            }
+        }
+
+        function displayMessages() {
+            if (messages.length === 0) {
+                messagesContainer.innerHTML = `
+                    <div class="system-message">
+                        No messages yet. Start the conversation!
+                    </div>
+                `;
+                return;
+            }
+
+            const messagesHTML = messages.map(message => {
+                // Determine if message is sent by current user
+                // Check both string and object ID formats
+                const isSent = message.sender_id === currentUser?.id || 
+                              message.sender_id === currentUser?._id ||
+                              (typeof message.sender_id === 'object' && message.sender_id._id === currentUser?.id);
+                
+                const messageTime = formatTime(message.created_at);
+                
+                return `
+                    <div class="message ${isSent ? 'sent' : 'received'}">
+                        <div class="message-content">
+                            <div>${escapeHtml(message.message)}</div>
+                            <div class="message-time">${messageTime}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            messagesContainer.innerHTML = messagesHTML;
+            scrollToBottom();
+        }
+
+        function scrollToBottom() {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function formatTime(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffInMinutes = (now.getTime() - date.getTime()) / (1000 * 60);
+            
+            if (diffInMinutes < 1) {
+                return 'Just now';
+            } else if (diffInMinutes < 60) {
+                return `${Math.floor(diffInMinutes)}m ago`;
+            } else if (diffInMinutes < 1440) {
+                return `${Math.floor(diffInMinutes / 60)}h ago`;
+            } else {
+                return date.toLocaleDateString();
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        async function sendMessage() {
+            const messageText = messageInput.value.trim();
+            if (!messageText) return;
+
+            // Validate currentRoom and roomId
+            if (!currentRoom || !currentRoom.id || currentRoom.id === 'undefined') {
+                showError('Invalid room. Please select a valid conversation.');
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('access_token');
+                const messageData = {
+                    roomId: currentRoom.id,
+                    message: messageText
+                };
+
+                // Send via HTTP POST endpoint
+                const response = await fetch(`${API_BASE_URL}/api/sendMessage`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(messageData)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || errorData.error || 'Failed to send message');
+                }
+
+                const result = await response.json();
+                
+                // Add message to local state for optimistic UI
+                const newMessage = {
+                    id: result.data._id || result.data.id,
+                    room_id: currentRoom.id,
+                    sender_id: currentUser?.id || currentUser?._id || 'user1',
+                    message: messageText,
+                    is_read: false,
+                    created_at: new Date().toISOString()
+                };
+
+                messages.push(newMessage);
+                displayMessages();
+                messageInput.value = '';
+                autoResize(messageInput);
+                updateSendButton();
+
+            } catch (error) {
+                console.error('Error sending message:', error);
+                showError('Failed to send message. Please try again.');
+            }
+        }
+
+        function handleKeyDown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+            updateSendButton();
+        }
+
+        function updateSendButton() {
+            const hasText = messageInput.value.trim().length > 0;
+            sendBtn.disabled = !hasText;
+        }
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            document.body.insertBefore(errorDiv, document.body.firstChild);
+            
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+
+        function goBack() {
+            window.location.href = 'rooms.html';
+        }
+
+        // Update send button state when input changes
+        messageInput.addEventListener('input', updateSendButton);
+    </script>
+</body>
+</html> 

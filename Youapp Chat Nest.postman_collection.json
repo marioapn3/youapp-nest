@@ -1,0 +1,254 @@
+{
+	"info": {
+		"_postman_id": "3865d249-d40a-4226-bc03-d2ee6e6099bd",
+		"name": "Youapp Chat Nest",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "45497842",
+		"_collection_link": "https://yiyaxyiyo.postman.co/workspace/Team-Workspace~8b86e0b1-e6e6-44f7-839e-7d25cd7d1a19/collection/45497842-3865d249-d40a-4226-bc03-d2ee6e6099bd?action=share&source=collection_link&creator=45497842"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Get Profile",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/getProfile",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"getProfile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Profile",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"display_name\": \"marioapn3\",\n  \"gender\": \"male\",\n  \"birthday\": \"1999-10-10\",\n  \"about\": \"I am a software engineer\",\n  \"weight\": 70,\n  \"interests\": [\n    \"music\",\n    \"movies\"\n  ],\n  \"height\": 180\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/createProfile",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"createProfile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"display_name\": \"marioapn3\",\n  \"gender\": \"male\",\n  \"birthday\": \"1999-10-10\",\n  \"about\": \"I am a software engineer\",\n  \"weight\": 70,\n  \"interests\": [\n    \"music\",\n    \"movies\"\n  ],\n  \"height\": 180\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/updateProfile",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"updateProfile"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"mario.aprilnino27@example.com\",\n  \"password\": \"password123\",\n  \"username\": \"marioapn3\",\n  \"password_confirmation\": \"password123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/register",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"identifier\": \"mario.aprilnino27@example.com\",\n  \"password\": \"password123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Chats",
+			"item": [
+				{
+					"name": "View Message",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/viewMessages",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"viewMessages"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View All Room",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/viewRooms",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"viewRooms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send Message",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"roomId\": \"669469469469469469469469\",\n  \"message\": \"Hello, how are you?\",\n  \"receiverId\": \"669469469469469469469469\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/sendMessage",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"sendMessage"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "localhost:2000",
+			"type": "default"
+		}
+	]
+}
