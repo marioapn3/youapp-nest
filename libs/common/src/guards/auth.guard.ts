@@ -1,0 +1,39 @@
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { Observable } from 'rxjs';
+import { AuthRequest } from '../interfaces/auth-request.interface';
+
+@Injectable()
+export class AuthGuard implements CanActivate {
+  constructor(private jwtService: JwtService) {}
+
+  canActivate(
+    context: ExecutionContext,
+  ): boolean | Promise<boolean> | Observable<boolean> {
+    const req = context.switchToHttp().getRequest<AuthRequest>();
+    const token = this.extractToken(req);
+    if (!token) {
+      throw new UnauthorizedException('Unauthorized');
+    }
+    try {
+      const payload: AuthRequest = this.jwtService.verify(token);
+      req.userId = payload.userId;
+    } catch (e) {
+      Logger.error(e);
+      throw new UnauthorizedException('Unauthorized');
+    }
+
+    return true;
+  }
+
+  private extractToken(request: AuthRequest): string | undefined {
+    const authHeader = request.headers['authorization'];
+    return authHeader?.split(' ')[1];
+  }
+}
