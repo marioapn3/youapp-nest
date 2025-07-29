@@ -7,20 +7,45 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "build:auth": "nest build auth",
+    "build:profile": "nest build profile",
+    "build:chat": "nest build chat",
+    "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
+    "start:prod": "node dist/apps/auth/main",
+    "start:auth": "nest start auth",
+    "start:auth:dev": "nest start auth --watch",
+    "start:auth:debug": "nest start auth --debug --watch",
+    "start:auth:prod": "node dist/apps/auth/main",
+    "start:profile": "nest start profile",
+    "start:profile:dev": "nest start profile --watch",
+    "start:profile:debug": "nest start profile --debug --watch",
+    "start:profile:prod": "node dist/apps/profile/main",
+    "start:chat": "nest start chat",
+    "start:chat:dev": "nest start chat --watch",
+    "start:chat:debug": "nest start chat --debug --watch",
+    "start:chat:prod": "node dist/apps/chat/main",
+    "start:gateway": "nest start gateway",
+    "start:gateway:dev": "nest start gateway --watch",
+    "start:gateway:debug": "nest start gateway --debug --watch",
+    "start:gateway:prod": "node dist/apps/gateway/main",
+    "build:gateway": "nest build gateway",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e:auth": "jest --config ./apps/auth/test/jest-e2e.json",
+    "test:e2e:profile": "jest --config ./apps/profile/test/jest-e2e.json",
+    "test:e2e:chat": "jest --config ./apps/chat/test/jest-e2e.json",
+    "test:e2e:gateway": "jest --config ./apps/gateway/test/jest-e2e.json"
   },
   "dependencies": {
+    "@nestjs/axios": "^4.0.1",
     "@nestjs/common": "^11.0.1",
+    "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
     "@nestjs/jwt": "^11.0.0",
     "@nestjs/microservices": "^11.1.4",
@@ -30,12 +55,15 @@
     "@nestjs/platform-socket.io": "^11.1.4",
     "@nestjs/swagger": "^11.2.0",
     "@nestjs/websockets": "^11.1.4",
+    "@types/jsonwebtoken": "^9.0.10",
     "amqp-connection-manager": "^4.1.14",
     "amqplib": "^0.10.8",
+    "axios": "^1.11.0",
     "bcrypt": "^6.0.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
     "dotenv": "^17.2.0",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.16.3",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
@@ -83,7 +111,7 @@
       "json",
       "ts"
     ],
-    "rootDir": "src",
+    "rootDir": ".",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
@@ -91,7 +119,14 @@
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "coverageDirectory": "./coverage",
+    "testEnvironment": "node",
+    "roots": [
+      "<rootDir>/apps/",
+      "<rootDir>/libs/"
+    ],
+    "moduleNameMapper": {
+      "^@app/common(|/.*)$": "<rootDir>/libs/common/src/$1"
+    }
   }
 }

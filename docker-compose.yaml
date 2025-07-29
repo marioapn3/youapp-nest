@@ -1,22 +1,73 @@
-version: '3.9'
-
 services:
-  backend:
-    container_name: nest-youapp
+  # Auth Service
+  auth-service:
+    container_name: auth-service
     build:
       context: .
       dockerfile: Dockerfile  
     ports:
-      - '2000:2000'
+      - '3001:3001'  
     depends_on:
       - mongo
       - rabbitmq
+    environment:
+      - PORT=3001
+      - NODE_ENV=development
     env_file:
       - .env
     volumes:
       - .:/app
-    command: npm run start:dev 
+      - /app/node_modules
+    command: npm run start:auth:dev
+    networks:
+      - youapp-network
 
+  # Profile Service  
+  profile-service:
+    container_name: profile-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '3002:3002'
+    depends_on:
+      - mongo
+      - rabbitmq
+    environment:
+      - PORT=3002
+      - NODE_ENV=development 
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: npm run start:profile:dev
+    networks:
+      - youapp-network
+
+  # Chat Service
+  chat-service:
+    container_name: chat-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '3003:3003'
+    depends_on:
+      - mongo
+      - rabbitmq
+    environment:
+      - PORT=3003
+      - NODE_ENV=development
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: npm run start:chat:dev
+    networks:
+      - youapp-network
+  # MongoDB Database
   mongo:
     image: mongo:latest
     container_name: mongodb
@@ -28,7 +79,10 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: rootpass
     volumes:
       - mongo-data:/data/db
+    networks:
+      - youapp-network
 
+  # RabbitMQ Message Broker
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
@@ -39,6 +93,12 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - youapp-network
 
 volumes:
   mongo-data:
+
+networks:
+  youapp-network:
+    driver: bridge

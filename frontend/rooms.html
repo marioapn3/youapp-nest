@@ -310,7 +310,7 @@
     </div>
 
     <script>
-        const API_BASE_URL = 'http://localhost:2000';
+        const API_BASE_URL = 'http://localhost:3000';
         let currentUser = null;
         let rooms = [];
         let selectedRoomId = null;
@@ -355,7 +355,7 @@
         async function loadRooms(page = 1, limit = 20) {
             try {
                 const token = localStorage.getItem('access_token');
-                const response = await fetch(`http://localhost:2000/api/viewRooms?page=1&limit=10`, {
+                const response = await fetch(`http://localhost:3000/api/chat/rooms?page=1&limit=10`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
